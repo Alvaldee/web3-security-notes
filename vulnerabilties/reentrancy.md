@@ -6,3 +6,18 @@ most notably withdrawing using the same state. Through such attacks, the advisor
 
 ---
 
+## Vulnerable Pattern
+A common vulnerable pattern is a function makes an external call before updating its own important state, allowing the function to be called repetitively.
+
+```solidity
+function withdraw() external {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0);
+
+        (bool ok, ) = msg.sender.call{value: amount}("");
+        require(ok, "Send failed");
+
+        balances[msg.sender] = 0;
+    }
+```
+
